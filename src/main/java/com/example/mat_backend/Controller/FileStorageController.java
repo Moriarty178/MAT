@@ -26,14 +26,16 @@ public class FileStorageController {
     @Autowired
     FileStorageService fileStorageService;
 
-    //upload????????
+    //upload
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            FileStorage savedFile = fileStorageService.saveFile(file);
-            return ResponseEntity.ok("File uploaded successfully with ID: " + savedFile.getUuid());
+            fileStorageService.uploadFile(file);
+            return ResponseEntity.ok("File uploaded successfully with ID: " + file.getOriginalFilename());
+        } catch (UnsupportedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Unsupported file type: " + e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file: " + e.getMessage());
         }
     }
 
@@ -50,14 +52,14 @@ public class FileStorageController {
         return fileStorage.map((ResponseEntity::ok)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    //delete
+    //delete with uuid
     @DeleteMapping("/{uuid}")
     public ResponseEntity<String> deleteFileById(@PathVariable String uuid) {
         fileStorageRepository.deleteById(uuid);//fileStorageService.deleteFileById(uuid);
         return ResponseEntity.ok("File deleted successfully");
     }
 
-    //clone????????
+    //clone with uuid
     @PostMapping("/clone/{uuid}")
     public ResponseEntity<String> cloneFile(@PathVariable String uuid) {
         Optional<FileStorage> opFileStorage = fileStorageRepository.findById(uuid);
@@ -73,12 +75,12 @@ public class FileStorageController {
             fileStorage.setCreatedAt(new Timestamp(new Date().getTime()));
             fileStorage.setUpdatedAt(new Timestamp (new Date().getTime()));
             fileStorageRepository.save(fileStorage);
-            return ResponseEntity.ok("Clone file successfully with ID: " + fileStorage.getUuid());
+            return ResponseEntity.ok("File cloned successfully with ID: " + fileStorage.getUuid());
         }
-        return ResponseEntity.status(500).body("Failed to clone file.");
+        return ResponseEntity.status(500).body("Error cloning file.");
     }
 
-    //search
+    //search with id or name
     @GetMapping("/search/{uuid}")
     public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam String querry) {
         //Querry SQL với nameFile || fileUuid -> return records có name, uuid chứa querry.

@@ -14,7 +14,7 @@ public class FileStorage {
     private String uuid;
 
     @Column(name = "file_size", nullable = false)
-    private Integer fileSize;
+    private Long fileSize;
 
     @Column(name = "fi_name", length = 255, nullable = false)
     private String name;
@@ -46,11 +46,11 @@ public class FileStorage {
         this.uuid = uuid;
     }
 
-    public Integer getFileSize() {
+    public Long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Integer fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 

@@ -2,11 +2,16 @@ package com.example.mat_backend.Service;
 
 import com.example.mat_backend.Entity.FileStorage;
 import com.example.mat_backend.Repository.FileStorageRepository;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -19,18 +24,30 @@ public class FileStorageService {
     @Autowired
     FileStorageRepository fileStorageRepository;
 
-    public FileStorage saveFile(MultipartFile file) throws IOException {
-        FileStorage fileStorage = new FileStorage();
-        //lưu meta data của file xlsx, csv vào PostgreSQL, phần nội dung (nặng tải) -> Sử dụng buffer
-        fileStorage.setUuid(UUID.randomUUID().toString());
-        fileStorage.setFileSize((int) file.getSize());
-        fileStorage.setName(file.getOriginalFilename());
-        fileStorage.setType(getFileExtension(file.getOriginalFilename()));
-//        fileStorage.setContentJson(convertFileToJson(file));
-        fileStorage.setCreatedAt(new Timestamp (new Date().getTime()));
-        fileStorage.setUpdatedAt(new Timestamp (new Date().getTime()));
+    public void uploadFile(MultipartFile file) throws IOException {
+        String fileType = getFileExtension(file.getOriginalFilename());
+        String encodedContent;
+        String encoding = "UTF-8";
 
-        return fileStorageRepository.save(fileStorage);
+        if("csv".equalsIgnoreCase(fileType)) {
+            encodedContent = encodeCsvFile(file);
+        } else if ("xlsx".equalsIgnoreCase(fileType)) {
+            encodedContent = encodeXlsxFile(file);
+        } else {
+            throw new UnsupportedOperationException("Unsupported file type: " + fileType);
+        }
+
+        FileStorage fileStorage = new FileStorage();
+        fileStorage.setUuid(UUID.randomUUID().toString());
+        fileStorage.setName(file.getOriginalFilename());
+        fileStorage.setType(fileType);
+        fileStorage.setFileSize(file.getSize());
+        fileStorage.setFi_buffer(encodedContent);
+        fileStorage.setFi_encoding(encoding);
+        fileStorage.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        fileStorage.setUpdatedAt(new Timestamp(new Date().getTime()));
+
+        fileStorageRepository.save(fileStorage);
     }
 
     //get extension <=> "type"
@@ -54,7 +71,74 @@ public class FileStorageService {
         }
     }
 
-    public
+    private String encodeCsvFile(MultipartFile file) throws IOException {
+        try(Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            CSVReader csvReader = new CSVReader(reader);
+            StringWriter writer = new StringWriter()) {
+
+            List<String[]> allRows;
+            try {
+                allRows = csvReader.readAll();
+            } catch (CsvException e) {
+                throw new IOException("Error parsing CSV file", e);
+            }
+            for(String[] row : allRows) {
+                String rowString = String.join(",", row);
+                writer.write(rowString);
+                writer.write("\n");
+            }
+
+            return writer.toString();
+        }
+    }
+
+    private String encodeXlsxFile(MultipartFile file) throws  IOException {
+        try(InputStream inputStream = file.getInputStream();
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            StringWriter writer = new StringWriter()) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            for(Row row : sheet) {
+                StringBuilder rowString = new StringBuilder();
+                for(Cell cell : row) {
+                    switch (cell.getCellType()) {
+                        case STRING:
+                            rowString.append(cell.getStringCellValue());
+                            break;
+                        case NUMERIC:
+                            if(DateUtil.isCellDateFormatted(cell))
+                                rowString.append(cell.getDateCellValue());
+                            else
+                                rowString.append(cell.getNumericCellValue());
+                            break;
+                        case BOOLEAN:
+                            rowString.append(cell.getBooleanCellValue());
+                            break;
+                        case FORMULA:
+                            rowString.append(cell.getCellFormula());
+                            break;
+                        case BLANK:
+                            rowString.append("");
+                            break;
+                        case ERROR:
+                            rowString.append(cell.getErrorCellValue());
+                            break;
+                        default:
+                            rowString.append(cell.toString());
+                            break;
+                    }
+
+                    rowString.append(",");
+                }
+                rowString.deleteCharAt(rowString.length() - 1);
+                writer.write(rowString.toString());
+                writer.write("\n");
+            }
+            return writer.toString();
+        }
+    }
+
+
 //    public List<FileStorage> getAllFiles() {
 //        return fileStorageRepository.findAll();
 //    }
@@ -67,7 +151,7 @@ public class FileStorageService {
 //        fileStorageRepository.deleteById(uuid);
 //    }
 
-    
+
 
 
 }

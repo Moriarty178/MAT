@@ -11,20 +11,21 @@ import java.util.List;
 
 public interface FileStorageRepository extends JpaRepository<FileStorage, String> {
     //Lầy những bản ghi có uuid || name chứa query
-    @Query("SELECT f from FileStorage f WHERE f.fi_uuid LIKE %:query% ORDER BY f.fi_name")//sắp xếp theo Alphabet
+//    @Query("SELECT f from file_storages f WHERE f.fi_uuid LIKE CONCAT('%', 'query', '%') ORDER BY f.fi_name")//sắp xếp theo Alphabet
+    @Query("SELECT f FROM FileStorage f WHERE f.uuid LIKE %:query% ORDER BY f.name")//dùng JPQL(ngôn ngữ truy vấn đối tượng) sử dụng tên entity thay vì tên cột và bảng trong CSDL
     List<FileStorage> findByIdContaining(@Param("query") String query);
 
-    @Query("SELECT f from FileStorage f WHERE f.fi_name LIKE %:query%")
+    @Query("SELECT f FROM FileStorage f WHERE f.name LIKE %:query%")//jpql != với sql thuần (vd: jpql: LIKE %:query%, sql: LIKE CONCAT ('%', 'query', '%')
     List<FileStorage> findByNameContaining(@Param("query") String query);
 
     //Tim kiếm theo "query" -> kết quả trả về được sắp xếp theo mức độ tương đồng giảm.
-    @Query("SELECT f FROM FileStorage f WHERE f.fi_name LIKE %:query% ORDER BY " +
+    @Query("SELECT f FROM FileStorage f WHERE f.name LIKE %:query% ORDER BY " +
             "CASE " +
-            "WHEN f.fi_name = :query THEN 0 " +
-            "WHEN f.fi_name LIKE :query% THEN 1 " +
-            "WHEN f.fi_name LIKE %:query THEN 2 " +
+            "WHEN f.name = :query THEN 0 " +
+            "WHEN f.name LIKE :query% THEN 1 " +
+            "WHEN f.name LIKE %:query THEN 2 " +
             "ELSE 3 END, " +
-            "f.fi_name")     //cùng thứ hạng thì sắp xếp theo Alphabet
+            "f.name")  //cùng thứ hạng thì sắp xếp theo Alphabet
     Page<FileStorage> searchFileStorage(@Param("query") String query, Pageable pageable);//Truy vấn SQL theo "query" -> Sử dụng pageale để lấy những bản ghi với điều kiện offset, limit
 }
 

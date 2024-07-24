@@ -81,8 +81,8 @@ public class FileStorageController {
     }
 
     //search with id or name
-    @GetMapping("/search/")//{uuid}
-    public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam String query) {
+    @GetMapping("/search")//{uuid}
+    public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam(value = "query") String query) {
         //query SQL với nameFile || fileUuid -> return records có name, uuid chứa query.
         List<FileStorage> results = fileStorageService.searchFile(query);
 
@@ -100,7 +100,7 @@ public class FileStorageController {
     }
 
     //Import on the config tab ----------------------
-    //API import
+    //API import                     checked
     @GetMapping("/config-tab")
     public ResponseEntity<List<FileStorage>> getAllFileStorages(
             @RequestParam(value = "offset", defaultValue = "0") int offset,
@@ -110,7 +110,7 @@ public class FileStorageController {
         return ResponseEntity.ok(listFile);
     }
 
-    //API search
+    //API search                       checked
     @GetMapping("/search-config-tab")//JavaScript: sau khi search trả về tối đa 7 bản ghi giống nhất, bến "offset" reset = 0 mỗi khi ấn vào lại tab config hoặc tìm kiếm nội dung mới.
     public ResponseEntity<List<FileStorage>> searchFileStorage(
             @RequestParam(value = "query") String query,
@@ -120,8 +120,8 @@ public class FileStorageController {
         return ResponseEntity.ok(listFile);
     }
 
-    //API load more
-    @GetMapping("/loadmore-config-tab")
+    //API load more               checked
+    @GetMapping("/loadmore-config-tab")   //
     public ResponseEntity<List<FileStorage>> loadMoreFileStorage(
             @RequestParam String query,
             @RequestParam int offset,

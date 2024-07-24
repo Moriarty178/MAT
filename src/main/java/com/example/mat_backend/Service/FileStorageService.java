@@ -7,6 +7,10 @@ import com.opencsv.exceptions.CsvException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,12 +63,12 @@ public class FileStorageService {
     }
 
     //search dựa theo id || name -> bản ghi có id || name chứa thông tin vừa gõ.
-    public List<FileStorage> searchFile(String querry) {
-        if(querry.startsWith("id:")) {
-            String id = querry.substring(3);
+    public List<FileStorage> searchFile(String query) {
+        if(query.startsWith("id:")) {
+            String id = query.substring(3);
             return fileStorageRepository.findByIdContaining(id);
-        } else if (querry.startsWith("name:")) {
-            String fiName = querry.substring(5);
+        } else if (query.startsWith("name:")) {
+            String fiName = query.substring(5);
             return fileStorageRepository.findByNameContaining(fiName);
         } else {
             return List.of();
@@ -138,19 +142,18 @@ public class FileStorageService {
         }
     }
 
+    public List<FileStorage> getFileStorage(int offset, int limit) {
+        int pageNumber = offset / limit;
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.DESC, "id"));//khởi tạo phần trang(pageNumber, limit) kèm sắp xếp giảm dần theo ID
+        return fileStorageRepository.findAll(pageable).getContent();
+    }
 
-//    public List<FileStorage> getAllFiles() {
-//        return fileStorageRepository.findAll();
-//    }
-//
-//    public Optional<FileStorage> getFileById(String uuid) {
-//        return fileStorageRepository.findById(uuid);
-//    }
-//
-//    public void deleteFileById(String uuid) {
-//        fileStorageRepository.deleteById(uuid);
-//    }
-
+    public List<FileStorage> searchFileStorage(String query, int offset, int limit) {
+        int pageNumber = offset / limit;
+        Pageable pageable = PageRequest.of(pageNumber, limit); //khởi tạo phân trang(pageNumber, limit)
+        Page<FileStorage> resulftPage = fileStorageRepository.searchFileStorage(query, pageable);//search theo query có phân trang
+        return resulftPage.getContent();
+    }
 
 
 

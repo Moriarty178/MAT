@@ -81,10 +81,14 @@ public class FileStorageController {
     }
 
     //search with id or name
-    @GetMapping("/search/{uuid}")
-    public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam String querry) {
-        //Querry SQL với nameFile || fileUuid -> return records có name, uuid chứa querry.
-        List<FileStorage> results = fileStorageService.searchFile(querry);
+    @GetMapping("/search/")//{uuid}
+    public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam String query) {
+        //query SQL với nameFile || fileUuid -> return records có name, uuid chứa query.
+        List<FileStorage> results = fileStorageService.searchFile(query);
+
+        if(results == null || results.isEmpty())
+            return ResponseEntity.noContent().build();
+        
         return ResponseEntity.ok(results);
     }
 
@@ -94,4 +98,73 @@ public class FileStorageController {
         //
         return ResponseEntity.ok(fileStorageRepository.findAll());//
     }
+
+    //Import on the config tab ----------------------
+    //API import
+    @GetMapping("/config-tab")
+    public ResponseEntity<List<FileStorage>> getAllFileStorages(
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+        List<FileStorage> listFile = fileStorageService.getFileStorage(offset, limit);
+        return ResponseEntity.ok(listFile);
+    }
+
+    //API search
+    @GetMapping("/search-config-tab")//JavaScript: sau khi search trả về tối đa 7 bản ghi giống nhất, bến "offset" reset = 0 mỗi khi ấn vào lại tab config hoặc tìm kiếm nội dung mới.
+    public ResponseEntity<List<FileStorage>> searchFileStorage(
+            @RequestParam(value = "query") String query,
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "7") int limit) {
+        List<FileStorage> listFile = fileStorageService.searchFileStorage(query, offset, limit);
+        return ResponseEntity.ok(listFile);
+    }
+
+    //API load more
+    @GetMapping("/loadmore-config-tab")
+    public ResponseEntity<List<FileStorage>> loadMoreFileStorage(
+            @RequestParam String query,
+            @RequestParam int offset,
+            @RequestParam int limit) {
+        List<FileStorage> listFile;
+        if(query != null && !query.isEmpty()) {
+            listFile = fileStorageService.searchFileStorage(query, offset, limit);
+        } else {
+            listFile = fileStorageService.getFileStorage(offset, limit);
+        }
+        return ResponseEntity.ok(listFile);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

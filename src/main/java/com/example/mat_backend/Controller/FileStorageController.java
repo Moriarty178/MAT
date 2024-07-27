@@ -26,7 +26,7 @@ public class FileStorageController {
     @Autowired
     FileStorageService fileStorageService;
 
-    //upload
+    //upload                         checked
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -39,29 +39,29 @@ public class FileStorageController {
         }
     }
 
-    //view all file storage
+    //view all file storage              checked
     @GetMapping
     public ResponseEntity<List<FileStorage>> getAllFiles() {
         return ResponseEntity.ok(fileStorageRepository.findAll()); //fileStorageService.getAllFiles()
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<FileStorage> getFileById(@PathVariable String uuid) {
-        Optional<FileStorage> fileStorage = fileStorageRepository.findById(uuid);
-//        FileStorage file = fileStorageRepository.findById(uuid).orElseThrow(() -> new RuntimeException("File not found"));
-        return fileStorage.map((ResponseEntity::ok)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+//    @GetMapping("/{uuid}")
+//    public ResponseEntity<FileStorage> getFileById(@PathVariable String uuid) {
+//        Optional<FileStorage> fileStorage = fileStorageRepository.findById(uuid);
+////        FileStorage file = fileStorageRepository.findById(uuid).orElseThrow(() -> new RuntimeException("File not found"));
+//        return fileStorage.map((ResponseEntity::ok)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+//    }
 
-    //delete with uuid
+    //delete with uuid                          checked
     @DeleteMapping("/{uuid}")
     public ResponseEntity<String> deleteFileById(@PathVariable String uuid) {
         fileStorageRepository.deleteById(uuid);//fileStorageService.deleteFileById(uuid);
         return ResponseEntity.ok("File deleted successfully");
     }
 
-    //clone with uuid
+    //clone with uuid                          checked
     @PostMapping("/clone/{uuid}")
-    public ResponseEntity<String> cloneFile(@PathVariable String uuid) {
+    public ResponseEntity<String> cloneFile(@PathVariable("uuid") String uuid) {
         Optional<FileStorage> opFileStorage = fileStorageRepository.findById(uuid);
         if(opFileStorage.isPresent()){
             FileStorage file = opFileStorage.get();
@@ -70,6 +70,7 @@ public class FileStorageController {
             fileStorage.setFileSize(file.getFileSize());
             fileStorage.setName(file.getName());
             fileStorage.setType(file.getType());
+            fileStorage.setFi_content_json("{\"data\": \"content\"}");
             fileStorage.setFi_buffer(file.getFi_buffer());
             fileStorage.setFi_encoding(file.getFi_encoding());
             fileStorage.setCreatedAt(new Timestamp(new Date().getTime()));
@@ -80,7 +81,7 @@ public class FileStorageController {
         return ResponseEntity.status(500).body("Error cloning file.");
     }
 
-    //search with id or name
+    //search with id or name                        checked
     @GetMapping("/search")//{uuid}
     public ResponseEntity<List<FileStorage>> searchFiles(@RequestParam(value = "query") String query) {
         //query SQL với nameFile || fileUuid -> return records có name, uuid chứa query.

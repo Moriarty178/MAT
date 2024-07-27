@@ -22,9 +22,10 @@ public class FileStorage {
     @Column(name = "fi_type", length = 255, nullable = false)
     private String type;
 
-//    @Column(name = "fi_content_json", length = 255, nullable = false)
-//    private String contentJson;//Bỏ lưu trữ nội dung dạng JSON (nặng tải database)
-    @Column(name = "fi_buffer", nullable = false)
+    @Column(name = "fi_content_json", length = 255, nullable = false)
+    private String fi_content_json;//Bỏ lưu trữ nội dung dạng JSON (nặng tải database)
+    
+    @Column(name = "fi_buffer", columnDefinition = "TEXT")
     private String fi_buffer;
 
     @Column(name = "fi_encoding", nullable = false)
@@ -70,14 +71,6 @@ public class FileStorage {
         this.type = type;
     }
 
-//    public String getContentJson() {
-//        return contentJson;
-//    }
-//
-//    public void setContentJson(String contentJson) {
-//        this.contentJson = contentJson;
-//    }
-
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -108,5 +101,13 @@ public class FileStorage {
 
     public void setFi_buffer(String fi_buffer) {
         this.fi_buffer = fi_buffer;
+    }
+
+    public String getFi_content_json() {
+        return fi_content_json;
+    }
+
+    public void setFi_content_json(String fi_content_json) {
+        this.fi_content_json = fi_content_json;
     }
 }

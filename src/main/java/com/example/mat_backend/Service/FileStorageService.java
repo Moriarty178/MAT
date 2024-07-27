@@ -38,7 +38,7 @@ public class FileStorageService {
         } else if ("xlsx".equalsIgnoreCase(fileType)) {
             encodedContent = encodeXlsxFile(file);
         } else {
-            throw new UnsupportedOperationException("Unsupported file type: " + fileType);
+            throw new UnsupportedOperationException();
         }
 
         FileStorage fileStorage = new FileStorage();
@@ -46,6 +46,7 @@ public class FileStorageService {
         fileStorage.setName(file.getOriginalFilename());
         fileStorage.setType(fileType);
         fileStorage.setFileSize(file.getSize());
+        fileStorage.setFi_content_json("{\"data\": \"content\"}");
         fileStorage.setFi_buffer(encodedContent);
         fileStorage.setFi_encoding(encoding);
         fileStorage.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -87,7 +88,7 @@ public class FileStorageService {
                 throw new IOException("Error parsing CSV file", e);
             }
             for(String[] row : allRows) {
-                String rowString = String.join(",", row);
+                String rowString = String.join("|", row);
                 writer.write(rowString);
                 writer.write("\n");
             }
@@ -132,7 +133,7 @@ public class FileStorageService {
                             break;
                     }
 
-                    rowString.append(",");
+                    rowString.append("|");
                 }
                 rowString.deleteCharAt(rowString.length() - 1);
                 writer.write(rowString.toString());

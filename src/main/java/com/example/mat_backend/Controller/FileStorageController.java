@@ -26,6 +26,7 @@ public class FileStorageController {
     @Autowired
     FileStorageService fileStorageService;
 
+    //FILESTORAGE MANAGEMENT--------------------------------
     //upload                         checked
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -93,7 +94,7 @@ public class FileStorageController {
         return ResponseEntity.ok(results);
     }
 
-    //Lọc --------------
+    //Lọc
     @GetMapping("/filter")
     public ResponseEntity<List<FileStorage>> filterFiles(@RequestParam String timeStart, @RequestParam String timeEnd) {
         //

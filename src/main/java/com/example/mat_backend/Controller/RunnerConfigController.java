@@ -47,7 +47,7 @@ public class RunnerConfigController {
         runnerConfigService.updateRunnerConfig(request, Uuid);
         //Kiểm tra trờng ru_co_cronjob_format trước khi đẩy lên stream "runnerflow"
         if(request.getCronjobFormat() != null) {
-            String eventName = "save_runner_flow";
+            String eventName = "save_runner_flow";                    
             String data = flowUuid;
             //Đẩy lên stream
             try {

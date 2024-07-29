@@ -26,7 +26,7 @@ public class FileStorageController {
     @Autowired
     FileStorageService fileStorageService;
 
-    //FILESTORAGE MANAGEMENT--------------------------------
+    //FILE_STORAGE MANAGEMENT--------------------------------
     //upload                         checked
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {

@@ -1,0 +1,102 @@
+#version: '3.10'
+#
+#services:
+#  postgres:
+#    image: postgres:13
+#    container_name: postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: 17082002
+#      POSTGRES_DB: db_tooltest
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#
+#  redis:
+#    image: redis:6
+#    container_name: redis
+#    ports:
+#      - "890:6379"
+#    volumes:
+#      - redis_data:/data
+#
+#  springboot-app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: springboot-app
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/db_tooltest
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: 17082002
+#      SPRING_REDIS_HOST: redis
+#      SPRING_REDIS_PORT: 6379
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+#      - redis
+#
+#  data-init:
+#    image: busybox
+#    container_name: data-init
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data  # Mount the volume
+#      - ./backup:/backup                        # Mount the local backup directory
+#    entrypoint: sh
+#    command: -c "
+#      cp -r /backup/* /var/lib/postgresql/data/
+#      "
+#    depends_on:
+#      - postgres
+#
+#volumes:
+#  postgres_data:
+#  redis_data:
+
+
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 17082002
+      POSTGRES_DB: db_tooltest
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    container_name: redis
+    ports:
+      - "890:6379"
+    volumes:
+      - redis_data:/data
+
+  springboot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_tooltest
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 17082002
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:

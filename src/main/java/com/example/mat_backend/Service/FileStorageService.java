@@ -179,8 +179,8 @@ public class FileStorageService {
              XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8))) {
 
-            // Lấy sheet đầu tiên
-            Sheet sheet = workbook.getSheetAt(0);
+            // Lấy sheet đầu tiên                                  
+            Sheet sheet = workbook.getSheetAt(0);                      //-> == !=
 
             // Đọc dữ liệu từ các hàng và cột
             for (Row row : sheet) {
@@ -253,10 +253,18 @@ public class FileStorageService {
     }
 
     public List<FileStorage> searchFileStorage(String query, int offset, int limit) {
-        int pageNumber = offset / limit;
-        Pageable pageable = PageRequest.of(pageNumber, limit); //khởi tạo phân trang(pageNumber, limit)
-        Page<FileStorage> resulftPage = fileStorageRepository.searchFileStorage(query, pageable);//search theo query có phân trang
-        return resulftPage.getContent();
+        try {
+            int pageNumber = offset / limit;
+            Pageable pageable = PageRequest.of(pageNumber, limit); //khởi tạo phân trang(pageNumber, limit)
+            Page<FileStorage> resulftPage = fileStorageRepository.searchFileStorage(query, pageable);//search theo query có phân trang
+            return resulftPage.getContent();
+        } catch (Exception e) {
+           // System.err.println(e);
+           // e.printStackTrace();
+            System.err.println("An error occurred: " + e.getMessage());
+         //   e.printStackTrace(); // Prints stack trace for detailed debugging
+            return Collections.emptyList(); // Return an empty list in case of an error
+        }
     }
 
 

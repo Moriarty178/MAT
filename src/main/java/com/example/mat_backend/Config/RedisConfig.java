@@ -14,7 +14,8 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactoryRunFlow() {
-        return new LettuceConnectionFactory("localhost", 890);
+//        return new LettuceConnectionFactory("localhost", 890);
+        return new LettuceConnectionFactory("redis", 6379);
     }
     //RedisTemplate đã được cấu hình đúng để sử dụng UTF-8
     @Bean

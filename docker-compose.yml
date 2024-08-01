@@ -76,9 +76,25 @@ services:
     image: redis:6
     container_name: redis
     ports:
-      - "890:6379"
+      - "890:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
     volumes:
       - redis_data:/data
+
+#  redis_tenser_flow:
+#    image: redis:6
+#    container_name: redis1
+#    ports:
+#      - "891:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
+#    volumes:
+#      - redis_data1:/data
+#
+#  redis_test_tool:
+#    image: redis:6
+#    container_name: redis2
+#    ports:
+#      - "892:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
+#    volumes:
+#      - redis_data2:/data
 
   springboot-app:
     build:
@@ -90,7 +106,7 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 17082002
       SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PORT: 890
     ports:
       - "8080:8080"
     depends_on:

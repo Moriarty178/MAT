@@ -248,7 +248,7 @@ public class FileStorageService {
     //Import fileStorage-----------------
     public List<FileStorage> getFileStorage(int offset, int limit) {
         int pageNumber = offset / limit;
-        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.DESC, "uuid"));//khởi tạo phần trang(pageNumber, limit) kèm sắp xếp giảm dần theo ID
+        Pageable pageable = PageRequest.of(pageNumber, limit, Sort.by(Sort.Direction.DESC, "createdAt"));//khởi tạo phần trang(pageNumber, limit) kèm sắp xếp giảm dần theo ID
         return fileStorageRepository.findAll(pageable).getContent();       //ok done
     }
 

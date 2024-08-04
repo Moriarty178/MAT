@@ -49,7 +49,7 @@
 #      cp -r /backup/* /var/lib/postgresql/data/
 #      "
 #    depends_on:
-#      - postgres
+#      - postgres                                         
 #
 #volumes:
 #  postgres_data:
@@ -72,29 +72,38 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
+  redis:       #run_flow
     image: redis:6
     container_name: redis
     ports:
-      - "890:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
+      - "890:6379"  #hostP:containerP  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
     volumes:
       - redis_data:/data
 
-#  redis_tenser_flow:
-#    image: redis:6
-#    container_name: redis1
-#    ports:
-#      - "891:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
-#    volumes:
-#      - redis_data1:/data
-#
-#  redis_test_tool:
-#    image: redis:6
-#    container_name: redis2
-#    ports:
-#      - "892:6379"  #host:port  # lắng nghe trên cổng 890 của host, bên container sử dụng cổng 6379 (ánh xạ cổng 890 trên host -> 6379 trong container)
-#    volumes:
-#      - redis_data2:/data
+  redis_restfull_api:
+    image: redis:6
+    container_name: redis_restfull_api
+    ports:
+      - "881:6379"
+    volumes:
+      - redis_data_restfull_api:/data
+
+  redis_test_tool:
+    image: redis:6
+    container_name: redis_test_tool
+    ports:
+      - "882:6379"
+    volumes:
+      - redis_data_test_tool:/data
+
+  redis_tenser_flow:
+    image: redis:6
+    container_name: redis_tenser_flow
+    ports:
+      - "884:6379"
+    volumes:
+      - redis_data_tenser_flow:/data
+
 
   springboot-app:
     build:
@@ -106,13 +115,29 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 17082002
       SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 890
+      SPRING_REDIS_PORT: 6379
+      REDIS_RESTFULL_API_HOST: redis_restfull_api
+      REDIS_RESTFULL_API_PORT: 6379
+      REDIS_TEST_TOOL_HOST: redis_test_tool
+      REDIS_TEST_TOOL_PORT: 6379
+      REDIS_TENSER_FLOW_HOST: redis_tenser_flow
+      REDIS_TENSER_FLOW_PORT: 6379
+
+
     ports:
       - "8080:8080"
     depends_on:
       - postgres
       - redis
+      - redis_restfull_api
+      - redis_test_tool
+      - redis_tenser_flow
 
 volumes:
   postgres_data:
   redis_data:
+  redis_data_restfull_api:
+  redis_data_test_tool:
+  redis_data_tenser_flow:
+
+

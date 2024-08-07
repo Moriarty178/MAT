@@ -41,7 +41,7 @@ public class RedisConfig {
     //run_flow
     @Bean
     public RedisConnectionFactory redisConnectionFactoryRunFlow() {
-//        return new LettuceConnectionFactory("localhost", 890);
+//        return new LettuceConnectionFactory("redis", 6379);
         return new LettuceConnectionFactory(runFlowHost, runFlowPort);        //"redis": địa chỉ ip của redis container <=> tên dịch vụ,ứng dụng
     }
     //RedisTemplate đã được cấu hình đúng để sử dụng UTF-8

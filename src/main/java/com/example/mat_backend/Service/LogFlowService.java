@@ -31,11 +31,11 @@ public class LogFlowService {
         return logFlowRepository.findAll(pageable).getContent();       //ok done
     }
 
-    public List<LogState> getStatesByLogFlow(String loUuid, int offset, int limit) {
+    public List<LogState> getStatesByLogFlow(String flowUuid, int offset, int limit) {
         try {
             int pageNumber = offset / limit;
             Pageable pageable = PageRequest.of(pageNumber, limit); //khởi tạo phân trang(pageNumber, limit)
-            Page<LogState> resulftPage = logStateRepository.searchLogState(loUuid, pageable);//search theo query có phân trang
+            Page<LogState> resulftPage = logStateRepository.searchLogState(flowUuid, pageable);//search theo query có phân trang
             return resulftPage.getContent();
         } catch (Exception e) {
             // System.err.println(e);

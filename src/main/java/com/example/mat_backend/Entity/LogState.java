@@ -16,6 +16,9 @@ public class LogState {
     @Column(name = "lo_st_response", length = 255, nullable = false)
     private String stResponse;
 
+    @Column(name = "lo_st_fl_uuid")
+    private String flowUuid;
+
     @Column(name = "lo_created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
 
@@ -44,6 +47,14 @@ public class LogState {
 
     public void setStResponse(String stResponse) {
         this.stResponse = stResponse;
+    }
+
+    public String getFlowUuid() {
+        return flowUuid;
+    }
+
+    public void setFlowUuid(String flowUuid) {
+        this.flowUuid = flowUuid;
     }
 
     public Timestamp getCreatedAt() {

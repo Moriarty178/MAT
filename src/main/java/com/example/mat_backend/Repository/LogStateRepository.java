@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface LogStateRepository extends JpaRepository<LogState, String> {
     //Tim kiếm theo "query" -> kết quả trả về được sắp xếp theo mức độ tương đồng giảm.
-    @Query("SELECT f FROM LogState f WHERE f.uuid = query ORDER BY f.updatedAt")  //cùng thứ hạng thì sắp xếp theo Alphabet
-    Page<LogState> searchLogState(@Param("query") String loUuid, Pageable pageable);//Truy vấn SQL theo "query" -> Sử dụng pageale để lấy những bản ghi với điều kiện offset, limit
+//    @Query("SELECT f FROM LogState f WHERE f.uuid = query ORDER BY f.updatedAt")  //cùng thứ hạng thì sắp xếp theo Alphabet
+//    Page<LogState> searchLogState(@Param("query") String loUuid, Pageable pageable);//Truy vấn SQL theo "query" -> Sử dụng pageale để lấy những bản ghi với điều kiện offset, limit
+    @Query("SELECT s FROM LogState s WHERE s.flowUuid = :flowUuid ORDER BY s.updatedAt")//cùng thứ hạng thì sắp xếp theo Alphabet
+    Page<LogState> searchLogState(@Param("flowUuid") String flowUuid, Pageable pageable);//Truy vấn SQL theo "query" -> Sử dụng pageale để lấy những bản ghi với điều kiện offset, limit
+
 }

@@ -1,6 +1,5 @@
 package com.example.mat_backend.Controller;
 
-import com.example.mat_backend.Entity.FileStorage;
 import com.example.mat_backend.Entity.LogFlow;
 import com.example.mat_backend.Entity.LogState;
 import com.example.mat_backend.Repository.LogFlowRepository;
@@ -33,12 +32,6 @@ public class LogController {
     private LogStateService logStateService;
 
     @Autowired
-    private LogFlow logFlow;
-
-    @Autowired
-    private LogState logState;
-
-    @Autowired
     private LogFlowRepository logFlowRepository;
 
     @Autowired
@@ -46,7 +39,7 @@ public class LogController {
 
 
 
-    @GetMapping("/flows")
+    @GetMapping("/flows")        //ckecked
     public ResponseEntity<List<LogFlow>> getLogFlows(
             @RequestParam(value = "offset",defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "10") int limit) {
@@ -55,7 +48,7 @@ public class LogController {
         return ResponseEntity.ok(listLogFlow);
     }
 
-    @GetMapping("/flows/load-more") //tải thêm khi người dùng chưa cick vào 1 log_flow cụ thể
+    @GetMapping("/flows/load-more") //tải thêm khi người dùng chưa cick vào 1 log_flow cụ thể   checked
     public ResponseEntity<List<LogFlow>> loadMoreLogFlows(
             @RequestParam(value = "offset", defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "5") int limit ) {
@@ -65,86 +58,26 @@ public class LogController {
         return ResponseEntity.ok(listLogMore);
     }
 
-    @GetMapping("/flows/{loUuid}/states") //lấy 7 bản ghi mới nhất (lo_updated_at) từ bảng log_state
+    @GetMapping("/flows/{flowUuid}/states") //lấy 7 bản ghi mới nhất (lo_updated_at) từ bảng log_state checked
     public ResponseEntity<List<LogState>> getLogStates(
-            @PathVariable String loUuid,
+            @PathVariable String flowUuid,
             @RequestParam(value = "offset", defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "7") int limit) {
 
-        List<LogState> listLogState = logFlowService.getStatesByLogFlow(loUuid, offset, limit);//lấy 7 bản log_state mới nhât của loUuid
+        List<LogState> listLogState = logFlowService.getStatesByLogFlow(flowUuid, offset, limit);//lấy 7 bản log_state mới nhât của loUuid
         return ResponseEntity.ok(listLogState);//truy vấn sql bên repository
     }
 
-    @GetMapping("/flows/{loUuid}/states/load-more")//tải thêm khi người dùng đã chọn 1 log_flow cụ thể trước đó
+    @GetMapping("/flows/{flowUuid}/states/load-more")//tải thêm khi người dùng đã chọn 1 log_flow cụ thể trước đó    checked
     public ResponseEntity<List<LogState>> loadMoreLogStates(
-            @PathVariable String loUuid,
+            @PathVariable (value = "flowUuid") String flowUuid,
             @RequestParam(value = "offset", defaultValue = "0") int offset,
             @RequestParam(value = "limit", defaultValue = "3") int limit) {
 
-        List<LogState> listLogState = logFlowService.getStatesByLogFlow(loUuid, offset, limit);// lấy thêm 3 bản ghi lob_state ngay sau 7 bản trước
+        List<LogState> listLogState = logFlowService.getStatesByLogFlow(flowUuid, offset, limit);// lấy thêm 3 bản ghi lob_state ngay sau 7 bản trước
         return ResponseEntity.ok(listLogState);
     }
 
     
-    //view all log flow
-//    @GetMapping("/all_log_flow")
-//    public ResponseEntity<List<LogFlow>> getAllLogFlows() {
-//        //sắp xếp theo lo_updated_at
-//        //findByLoUpdatedAt()
-//        return ResponseEntity.ok(logFlowRepository.findAll());
-//    }
-//
-//    //view all state của flowUuid cụ thể
-//    @GetMapping("/all_log_state")  //click vào 1 flowUuid cụ thể
-//    public ResponseEntity<List<LogState>> getAllLogStates(@RequestParam String flowUuid) {
-//        //sắp xếp theo lo_updated_at
-//        //getAllStateOfFlowUuid()
-//        return ResponseEntity.ok(logStateRepository.findAll());
-//    }
-//
-//    @GetMapping("/all_log_flow/loadmore")
-//    public ResponseEntity<List<LogState>> loardMoreLogFlow(
-//            @RequestParam(value = "offset", defaultValue = "0") int offset,
-//            @RequestParam(value = "limit", defaultValue = "7") int limit) {
-//        List<LogState> listStates = logStateService.getStates(offset, limit);
-//        return ResponseEntity.ok(listStates);
-//    }
-//    public ResponseEntity<List<FileStorage>> searchFileStorage(
-//            @RequestParam(value = "query") String query,
-//            @RequestParam(value = "offset", defaultValue = "0") int offset,
-//            @RequestParam(value = "limit", defaultValue = "7") int limit) {
-//        List<FileStorage> listFile = fileStorageService.searchFileStorage(query, offset, limit);
-//        return ResponseEntity.ok(listFile);
-//
-//    @GetMapping("/all_log_state/loadmore")
-//    public ResponseEntity<List<LogState>> loardMoreLogState() {
-//
-//    }
-
-//
-//    @Autowired
-//    private LogService logService;
-//
-//    @GetMapping("/flowIds")
-//    public List<String> getFlowIds() {
-//        return logService.getAllFlowIds();
-//    }
-//
-//    @GetMapping("/logslist")
-//    public List<Map<Object, Object>> getLogs(@RequestParam String flowId) {
-//        String streamName = "response_data_stream";
-//        List<Map<String, Object>> instances = Arrays.asList(
-//                createInstance("runFlow"),
-//                createInstance("restfulApi"),
-//                createInstance("redisTestTool"),
-//                createInstance("tenserFlow")
-//        );
-//        return logService.getAllFilteredRecords(flowId, instances, streamName, 10, 10);
-//    }
-//
-//    private Map<String, Object> createInstance(String instanceName) {
-//        Map<String, Object> instance = new HashMap<>();
-//        instance.put("instance", instanceName);
-//        return instance;
-//    }
+   
 }

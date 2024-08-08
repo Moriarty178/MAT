@@ -4,6 +4,7 @@ import com.example.mat_backend.DTO.RunnerConfigRequest;
 import com.example.mat_backend.Service.EncryptionDecrytionService;
 import com.example.mat_backend.Service.RunnerConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,10 @@ public class RunnerConfigController {
     @Autowired
     private RunnerConfigService runnerConfigService;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+//    @Autowired
+//    private RedisTemplate<String, Object> redisTemplate;
+//    @Qualifier("redisTemplateRunFlow")//chỉ định tiêm Bean nào trong trường hợp có nhiều Bean RedisTemplate
+//    private RedisTemplate<String, Object> redisRunFlowInstance;
 
     @Autowired
     private EncryptionDecrytionService encryptionDecrytionService;
@@ -61,22 +64,3 @@ public class RunnerConfigController {
         return ResponseEntity.status(500).body("Cronjob format is null");
     }
 }
-
-//public ResponseEntity<String> saveRunnerConfig(@RequestBody RunnerConfigRequest request, @RequestParam String flowUuid) {
-//    //Create or update Runner Config
-//    runnerConfigService.saveOrUpdateRunnerConfig(request, flowUuid);
-//    //Kiểm tra trờng ru_co_cronjob_format trước khi đẩy lên stream "runnerflow"
-//    if(request.getCronjobFormat() != null) {
-//        String eventName = "save_runner_flow";
-//        String data = flowUuid;
-//        //Đẩy lên stream
-//        try {
-//            encryptionDecrytionService.addEncryptedDataToStream(data, eventName);
-//            return ResponseEntity.ok("Successfully uploaded to stream.");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(500).body("Error pushing to stream: " + e.getMessage());
-//        }
-//    }
-//    return ResponseEntity.status(500).body("Cronjob format is null");
-//}
